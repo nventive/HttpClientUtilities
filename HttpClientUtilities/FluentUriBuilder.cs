@@ -32,15 +32,6 @@ namespace HttpClientUtilities
         }
 
         /// <summary>
-        /// Implicit conversion to string.
-        /// </summary>
-        /// <param name="builder">The <see cref="FluentUriBuilder"/> to convert.</param>
-        public static implicit operator string(FluentUriBuilder builder)
-        {
-            return builder?.ToString();
-        }
-
-        /// <summary>
         /// Implicit conversion to <see cref="Uri"/>.
         /// </summary>
         /// <param name="builder">The <see cref="FluentUriBuilder"/> to convert.</param>

@@ -2,6 +2,7 @@
 using System.Net.Http;
 using HttpClientUtilities;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 
@@ -60,6 +61,30 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return builder.AddHttpMessageHandler<THandler>();
+        }
+
+        /// <summary>
+        /// Adds and register <see cref="HttpTracingDelegatingHandler{T}"/> to enable tracing of requests/responses.
+        /// </summary>
+        /// <typeparam name="TClient">
+        /// The type of the typed client.
+        /// Will determine the category of the logger (System.Net.Http.HttpClient.T.TraceHandler).
+        /// </typeparam>
+        /// <param name="builder">The <see cref="IHttpClientBuilder"/>.</param>
+        /// <param name="isResponseSuccessful">
+        /// A function to allow customization of the evaluation of a successful response.
+        /// Defaults to <see cref="HttpResponseMessage.IsSuccessStatusCode"/>.
+        /// </param>
+        /// <returns>The updated <see cref="IHttpClientBuilder"/>.</returns>
+        public static IHttpClientBuilder AddHttpTracing<TClient>(this IHttpClientBuilder builder, Func<HttpResponseMessage, bool> isResponseSuccessful = null)
+        {
+            if (isResponseSuccessful == null)
+            {
+                return builder.AddAndRegisterHttpMessageHandler<HttpTracingDelegatingHandler<TClient>>();
+            }
+
+            return builder.AddAndRegisterHttpMessageHandler(
+                sp => new HttpTracingDelegatingHandler<TClient>(sp.GetRequiredService<ILoggerFactory>(), isResponseSuccessful));
         }
     }
 }

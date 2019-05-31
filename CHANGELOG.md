@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Added FluentUriBuilder to help in building Uris.
+- Added HttpTracingDelegatingHandler to trace full requests/responses.
 
 ### Changed
 
