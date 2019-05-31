@@ -48,6 +48,12 @@ namespace HttpClientUtilities.Tests
 
             yield return new object[]
             {
+                FluentUriBuilder.ForPath("foo").WithParamIf("bar1", "value1", false).WithParamIf("bar2", "value2", true),
+                "foo?bar2=value2",
+            };
+
+            yield return new object[]
+            {
                 FluentUriBuilder.ForPath("foo").WithSegment(null),
                 "foo",
             };

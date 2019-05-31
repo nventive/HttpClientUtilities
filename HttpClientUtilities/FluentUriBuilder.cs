@@ -166,6 +166,42 @@ namespace HttpClientUtilities
         }
 
         /// <summary>
+        /// Conditionaly adds a query string parameter.
+        /// </summary>
+        /// <param name="name">The name of the parameter.</param>
+        /// <param name="value">The value of the parameter.</param>
+        /// <param name="condition">The condition to check. The param will only be added if true.</param>
+        /// <param name="encode">True to UrlEncode the value, false otherwise.</param>
+        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
+        public FluentUriBuilder WithParamIf(string name, string value, bool condition, bool encode = true)
+        {
+            if (!condition)
+            {
+                return this;
+            }
+
+            return WithParam(name, value, encode);
+        }
+
+        /// <summary>
+        /// Conditionaly adds a query string parameter. Calls <see cref="object.ToString"/> on the <paramref name="value"/>.
+        /// </summary>
+        /// <param name="name">The name of the parameter.</param>
+        /// <param name="value">The value of the parameter.</param>
+        /// <param name="condition">The condition to check. The param will only be added if true.</param>
+        /// <param name="encode">True to UrlEncode the value, false otherwise.</param>
+        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
+        public FluentUriBuilder WithParamIf(string name, object value, bool condition, bool encode = true)
+        {
+            if (!condition)
+            {
+                return this;
+            }
+
+            return WithParam(name, value, encode);
+        }
+
+        /// <summary>
         /// Sets the fragment (anything after #).
         /// </summary>
         /// <param name="fragment">The fragment to set.</param>
