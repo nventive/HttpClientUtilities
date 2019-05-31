@@ -91,38 +91,6 @@ namespace HttpClientUtilities
         }
 
         /// <summary>
-        /// Adds a path segment. Calls <see cref="object.ToString"/> on the <paramref name="segment"/>.
-        /// </summary>
-        /// <param name="segment">The new segment to add.</param>
-        /// <param name="encode">True to UrlEncode the value, false otherwise.</param>
-        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added segment.</returns>
-        public FluentUriBuilder WithSegment(object segment, bool encode = true)
-        {
-            if (segment == null)
-            {
-                return this;
-            }
-
-            return WithSegment(segment.ToString(), encode);
-        }
-
-        /// <summary>
-        /// Adds and encodes multiple path segments.
-        /// </summary>
-        /// <param name="segments">The new segments to add. They will be URL encoded.</param>
-        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added path segments.</returns>
-        public FluentUriBuilder WithSegments(params string[] segments)
-        {
-            var result = this;
-            foreach (var segment in segments)
-            {
-                result = result.WithSegment(segment);
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Adds a query string parameter.
         /// </summary>
         /// <param name="name">The name of the parameter.</param>
@@ -146,59 +114,6 @@ namespace HttpClientUtilities
                 { name, encode ? WebUtility.UrlEncode(value) : value },
             };
             return new FluentUriBuilder(_path, newParameters, _fragment);
-        }
-
-        /// <summary>
-        /// Adds a query string parameter. Calls <see cref="object.ToString"/> on the <paramref name="value"/>.
-        /// </summary>
-        /// <param name="name">The name of the parameter.</param>
-        /// <param name="value">The value of the parameter.</param>
-        /// <param name="encode">True to UrlEncode the value, false otherwise.</param>
-        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
-        public FluentUriBuilder WithParam(string name, object value, bool encode = true)
-        {
-            if (value == null)
-            {
-                return this;
-            }
-
-            return WithParam(name, value.ToString(), encode);
-        }
-
-        /// <summary>
-        /// Conditionaly adds a query string parameter.
-        /// </summary>
-        /// <param name="name">The name of the parameter.</param>
-        /// <param name="value">The value of the parameter.</param>
-        /// <param name="condition">The condition to check. The param will only be added if true.</param>
-        /// <param name="encode">True to UrlEncode the value, false otherwise.</param>
-        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
-        public FluentUriBuilder WithParamIf(string name, string value, bool condition, bool encode = true)
-        {
-            if (!condition)
-            {
-                return this;
-            }
-
-            return WithParam(name, value, encode);
-        }
-
-        /// <summary>
-        /// Conditionaly adds a query string parameter. Calls <see cref="object.ToString"/> on the <paramref name="value"/>.
-        /// </summary>
-        /// <param name="name">The name of the parameter.</param>
-        /// <param name="value">The value of the parameter.</param>
-        /// <param name="condition">The condition to check. The param will only be added if true.</param>
-        /// <param name="encode">True to UrlEncode the value, false otherwise.</param>
-        /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
-        public FluentUriBuilder WithParamIf(string name, object value, bool condition, bool encode = true)
-        {
-            if (!condition)
-            {
-                return this;
-            }
-
-            return WithParam(name, value, encode);
         }
 
         /// <summary>

@@ -30,30 +30,6 @@ namespace HttpClientUtilities.Tests
 
             yield return new object[]
             {
-                FluentUriBuilder.ForPath("foo").WithParam("bar", "value with space"),
-                "foo?bar=value+with+space",
-            };
-
-            yield return new object[]
-            {
-                FluentUriBuilder.ForPath("foo").WithParam("bar", "value with space", false),
-                "foo?bar=value with space",
-            };
-
-            yield return new object[]
-            {
-                FluentUriBuilder.ForPath("foo").WithParam("bar1", "value1").WithParam("bar2", "value2"),
-                "foo?bar1=value1&bar2=value2",
-            };
-
-            yield return new object[]
-            {
-                FluentUriBuilder.ForPath("foo").WithParamIf("bar1", "value1", false).WithParamIf("bar2", "value2", true),
-                "foo?bar2=value2",
-            };
-
-            yield return new object[]
-            {
                 FluentUriBuilder.ForPath("foo").WithSegment(null),
                 "foo",
             };
@@ -84,14 +60,50 @@ namespace HttpClientUtilities.Tests
 
             yield return new object[]
             {
+                FluentUriBuilder.ForPath("foo").WithSegmentIf("bar", false).WithSegmentIf("foobar", true),
+                "foo/foobar",
+            };
+
+            yield return new object[]
+            {
                 FluentUriBuilder.ForPath("foo").WithSegments("bar", "foobar"),
                 "foo/bar/foobar",
             };
 
             yield return new object[]
             {
+                FluentUriBuilder.ForPath("foo").WithParam("bar", "value with space"),
+                "foo?bar=value+with+space",
+            };
+
+            yield return new object[]
+            {
+                FluentUriBuilder.ForPath("foo").WithParam("bar", "value with space", false),
+                "foo?bar=value with space",
+            };
+
+            yield return new object[]
+            {
+                FluentUriBuilder.ForPath("foo").WithParam("bar1", "value1").WithParam("bar2", "value2"),
+                "foo?bar1=value1&bar2=value2",
+            };
+
+            yield return new object[]
+            {
+                FluentUriBuilder.ForPath("foo").WithParamIf("bar1", "value1", false).WithParamIf("bar2", "value2", true),
+                "foo?bar2=value2",
+            };
+
+            yield return new object[]
+            {
                 FluentUriBuilder.ForPath("foo").WithFragment("bar"),
                 "foo#bar",
+            };
+
+            yield return new object[]
+            {
+                FluentUriBuilder.ForPath("foo").WithFragmentIf("bar", false).WithFragmentIf("foobar", true),
+                "foo#foobar",
             };
 
             yield return new object[]
