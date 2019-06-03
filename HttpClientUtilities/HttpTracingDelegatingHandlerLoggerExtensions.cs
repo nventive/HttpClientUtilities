@@ -14,33 +14,35 @@ namespace HttpClientUtilities
         private const string RequestMessageFormat = @"
 {RequestMethod} {RequestUri} {RequestHttpVersion}
 {RequestHeaders}
+
 {RequestBody}";
 
         private const string ResponseMessageFormat = @"
 {ResponseHttpVersion} {ResponseStatusCode} {ResponseReason}
 {ResponseHeaders}
+
 {ResponseBody}";
 
-        private static readonly Action<ILogger, string, string, string, string, string, Exception> _requestSuccessful =
-            LoggerMessage.Define<string, string, string, string, string>(
+        private static readonly Action<ILogger, HttpMethod, Uri, string, string, string, Exception> _requestSuccessful =
+            LoggerMessage.Define<HttpMethod, Uri, string, string, string>(
                 LogLevel.Trace,
                 new EventId(200, "RequestSuccessful"),
                 RequestMessageFormat);
 
-        private static readonly Action<ILogger, string, string, string, string, string, Exception> _requestError =
-            LoggerMessage.Define<string, string, string, string, string>(
+        private static readonly Action<ILogger, HttpMethod, Uri, string, string, string, Exception> _requestError =
+            LoggerMessage.Define<HttpMethod, Uri, string, string, string>(
                 LogLevel.Warning,
                 new EventId(201, "RequestError"),
                 RequestMessageFormat);
 
-        private static readonly Action<ILogger, string, string, string, string, string, Exception> _responseSuccessful =
-            LoggerMessage.Define<string, string, string, string, string>(
+        private static readonly Action<ILogger, string, int, string, string, string, Exception> _responseSuccessful =
+            LoggerMessage.Define<string, int, string, string, string>(
                 LogLevel.Trace,
                 new EventId(210, "ResponseSuccessful"),
                 ResponseMessageFormat);
 
-        private static readonly Action<ILogger, string, string, string, string, string, Exception> _responseError =
-            LoggerMessage.Define<string, string, string, string, string>(
+        private static readonly Action<ILogger, string, int, string, string, string, Exception> _responseError =
+            LoggerMessage.Define<string, int, string, string, string>(
                 LogLevel.Warning,
                 new EventId(211, "ResponseError"),
                 ResponseMessageFormat);
@@ -55,8 +57,8 @@ namespace HttpClientUtilities
         {
             _requestSuccessful(
                 logger,
-                request.Method.ToString(),
-                request.RequestUri.ToString(),
+                request.Method,
+                request.RequestUri,
                 $"HTTP/{request.Version}",
                 request.AllHeadersAsString(),
                 request.Content == null ? string.Empty : await request.Content.ReadAsStringAsync(),
@@ -74,8 +76,8 @@ namespace HttpClientUtilities
         {
             _requestError(
                 logger,
-                request.Method.ToString(),
-                request.RequestUri.ToString(),
+                request.Method,
+                request.RequestUri,
                 $"HTTP/{request.Version}",
                 request.AllHeadersAsString(),
                 request.Content == null ? string.Empty : await request.Content.ReadAsStringAsync(),
@@ -93,7 +95,7 @@ namespace HttpClientUtilities
             _responseSuccessful(
                 logger,
                 $"HTTP/{response.Version}",
-                ((int)response.StatusCode).ToString(CultureInfo.InvariantCulture),
+                (int)response.StatusCode,
                 response.ReasonPhrase,
                 response.AllHeadersAsString(),
                 response.Content == null ? string.Empty : await response.Content.ReadAsStringAsync(),
@@ -112,7 +114,7 @@ namespace HttpClientUtilities
             _responseError(
                 logger,
                 $"HTTP/{response.Version}",
-                ((int)response.StatusCode).ToString(CultureInfo.InvariantCulture),
+                (int)response.StatusCode,
                 response.ReasonPhrase,
                 response.AllHeadersAsString(),
                 response.Content == null ? string.Empty : await response.Content.ReadAsStringAsync(),
