@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using HttpClientUtilities;
 using Microsoft.Extensions.Options;
 
@@ -14,7 +15,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the <see cref="IHttpClientFactory"/> and related services to the <see cref="IServiceCollection"/>
         /// and configures a binding between the <typeparamref name="TClient"/> type and a named <see cref="HttpClient"/>.
         /// The client name will be set to the type name of <typeparamref name="TClient"/>.
-        /// Automatically configure options defined in <typeparamref name="TOptions"/> (<see cref="HttpOptions.BaseAddress"/> and <see cref="HttpOptions.Timeout"/>).
+        /// Automatically configure options defined in <typeparamref name="TOptions"/>
+        /// (<see cref="HttpOptions.BaseAddress"/>, <see cref="HttpOptions.Timeout"/> and <see cref="HttpOptions.AuthorizationHeader"/>).
         /// </summary>
         /// <typeparam name="TClient">
         /// The type of the typed client. They type specified will be registered in the service
@@ -38,6 +40,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     var options = sp.GetRequiredService<IOptions<TOptions>>().Value;
                     client.BaseAddress = options.BaseAddress;
                     client.Timeout = options.Timeout;
+                    if (!string.IsNullOrEmpty(options.AuthorizationHeader))
+                    {
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(options.AuthorizationHeader);
+                    }
+
                     configureClient?.Invoke(sp, client, options);
                 });
     }

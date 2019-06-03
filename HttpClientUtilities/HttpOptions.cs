@@ -11,9 +11,9 @@ namespace HttpClientUtilities
     public abstract class HttpOptions
     {
         /// <summary>
-        /// Gets the default <see cref="Timeout"/> (10 seconds).
+        /// Gets the default <see cref="Timeout"/> (30 seconds).
         /// </summary>
-        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// Gets the default <see cref="NumberOfRetries"/> (3).
@@ -21,9 +21,14 @@ namespace HttpClientUtilities
         public static readonly int DefaultNumberOfRetries = 3;
 
         /// <summary>
-        /// Gets the default <see cref="RetriesSleepDuration"/> (500 ms).
+        /// Gets the default <see cref="RetriesSleepDuration"/> (300 ms).
         /// </summary>
-        public static readonly TimeSpan DefaultRetriesSleepDuration = TimeSpan.FromMilliseconds(500);
+        public static readonly TimeSpan DefaultRetriesSleepDuration = TimeSpan.FromMilliseconds(300);
+
+        /// <summary>
+        /// Gets the default <see cref="RetriesMaximumSleepDuration"/> (3 seconds).
+        /// </summary>
+        public static readonly TimeSpan DefaultRetriesMaximumSleepDuration = TimeSpan.FromSeconds(3);
 
         /// <summary>
         /// Gets the default <see cref="ErrorsAllowedBeforeBreaking"/> (10).
@@ -36,6 +41,11 @@ namespace HttpClientUtilities
         public static readonly TimeSpan DefaultBreakDuration = TimeSpan.FromMinutes(1);
 
         /// <summary>
+        /// Gets the default <see cref="MaxParallelization"/>. (0 = disabled).
+        /// </summary>
+        public static readonly int DefaultMaxParallelization = 0;
+
+        /// <summary>
         /// Gets or sets the <see cref="HttpClient.BaseAddress"/> value.
         /// </summary>
         public Uri BaseAddress { get; set; }
@@ -46,6 +56,12 @@ namespace HttpClientUtilities
         public TimeSpan Timeout { get; set; } = DefaultTimeout;
 
         /// <summary>
+        /// Gets or sets a static Authorization Http Header.
+        /// Useful for static API Keys / bearer tokens.
+        /// </summary>
+        public string AuthorizationHeader { get; set; }
+
+        /// <summary>
         /// Gets or sets the number of automatic retries in case of transient HTTP failures.
         /// Set to 0 to disable automatic retries.
         /// </summary>
@@ -53,8 +69,15 @@ namespace HttpClientUtilities
 
         /// <summary>
         /// Gets or sets the sleep duration in-between retries in case of transient HTTP failures.
+        /// This is the minimum sleep duration that will be applied in case of Jitter retries.
         /// </summary>
         public TimeSpan RetriesSleepDuration { get; set; } = DefaultRetriesSleepDuration;
+
+        /// <summary>
+        /// Gets or sets the maximum sleep duration in-between retries in case of transient HTTP failures.
+        /// Set to 00:00:00 to disable Jittered retries and have a constant retry sleep duration applied (using <see cref="RetriesSleepDuration"/>).
+        /// </summary>
+        public TimeSpan RetriesMaximumSleepDuration { get; set; } = DefaultRetriesMaximumSleepDuration;
 
         /// <summary>
         /// Gets or sets the number of errors to allow before the Circuit Breaker opens.
@@ -66,5 +89,10 @@ namespace HttpClientUtilities
         /// Gets or sets the duration of a break when the circuit breaker opens.
         /// </summary>
         public TimeSpan BreakDuration { get; set; } = DefaultBreakDuration;
+
+        /// <summary>
+        /// Gets or sets the maximum number of parallel calls allowed.
+        /// </summary>
+        public int MaxParallelization { get; set; } = DefaultMaxParallelization;
     }
 }

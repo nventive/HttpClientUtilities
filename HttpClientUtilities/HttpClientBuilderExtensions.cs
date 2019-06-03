@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using HttpClientUtilities;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -15,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary>
         /// Configures Polly Policy Handlers using options defined in <typeparamref name="T"/>.
-        /// Adds both retry and circuit breaker policies depending on the configured <see cref="HttpOptions"/> values.
+        /// Adds retry, circuit breaker and bulkhead policies depending on the configured <see cref="HttpOptions"/> values.
         /// </summary>
         /// <typeparam name="T">The option type.</typeparam>
         /// <param name="builder">The <see cref="IHttpClientBuilder"/>.</param>
@@ -32,7 +33,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (options.NumberOfRetries > 0)
             {
-                builder = builder.AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(options.NumberOfRetries, _ => options.RetriesSleepDuration));
+                if (options.RetriesMaximumSleepDuration == TimeSpan.FromTicks(0))
+                {
+                    builder = builder.AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(options.NumberOfRetries, _ => options.RetriesSleepDuration));
+                }
+                else
+                {
+                    builder = builder.AddTransientHttpErrorPolicy(
+                        p => p.WaitAndRetryAsync(DecorrelatedJitter(options.NumberOfRetries, options.RetriesSleepDuration, options.RetriesMaximumSleepDuration)));
+                }
+            }
+
+            if (options.MaxParallelization > 0)
+            {
+                builder = builder.AddPolicyHandler(Policy.BulkheadAsync(options.MaxParallelization).AsAsyncPolicy<HttpResponseMessage>());
             }
 
             return builder;
@@ -85,6 +99,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.AddAndRegisterHttpMessageHandler(
                 sp => new HttpTracingDelegatingHandler<TClient>(sp.GetRequiredService<ILoggerFactory>(), isResponseSuccessful));
+        }
+
+        private static IEnumerable<TimeSpan> DecorrelatedJitter(int maxRetries, TimeSpan seedDelay, TimeSpan maxDelay)
+        {
+            var jitterer = new Random();
+            var retries = 0;
+
+            var seed = seedDelay.TotalMilliseconds;
+            var max = maxDelay.TotalMilliseconds;
+            var current = seed;
+
+            while (++retries <= maxRetries)
+            {
+                // Adopting the 'Decorrelated Jitter' formula from https://www.awsarchitectureblog.com/2015/03/backoff.html.
+                // Can be between seed and previous * 3.  Mustn't exceed max.
+                current = Math.Min(max, Math.Max(seed, current * 3 * jitterer.NextDouble()));
+                yield return TimeSpan.FromMilliseconds(current);
+            }
         }
     }
 }
