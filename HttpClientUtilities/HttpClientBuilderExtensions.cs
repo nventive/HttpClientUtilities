@@ -91,15 +91,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </param>
         /// <returns>The updated <see cref="IHttpClientBuilder"/>.</returns>
         public static IHttpClientBuilder AddHttpTracing<TClient>(this IHttpClientBuilder builder, Func<HttpResponseMessage, bool> isResponseSuccessful = null)
-        {
-            if (isResponseSuccessful == null)
-            {
-                return builder.AddAndRegisterHttpMessageHandler<HttpTracingDelegatingHandler<TClient>>();
-            }
-
-            return builder.AddAndRegisterHttpMessageHandler(
+            => builder.AddAndRegisterHttpMessageHandler(
                 sp => new HttpTracingDelegatingHandler<TClient>(sp.GetRequiredService<ILoggerFactory>(), isResponseSuccessful));
-        }
 
         private static IEnumerable<TimeSpan> DecorrelatedJitter(int maxRetries, TimeSpan seedDelay, TimeSpan maxDelay)
         {
