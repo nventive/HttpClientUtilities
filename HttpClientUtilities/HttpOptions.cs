@@ -92,6 +92,7 @@ namespace HttpClientUtilities
 
         /// <summary>
         /// Gets or sets the maximum number of parallel calls allowed.
+        /// Set to 0 for unlimited parallel requests.
         /// </summary>
         public int MaxParallelization { get; set; } = DefaultMaxParallelization;
     }
