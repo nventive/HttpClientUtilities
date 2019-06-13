@@ -25,7 +25,7 @@ to work in conjunction with the [`IHttpClientFactory`](https://docs.microsoft.co
 
 ### FluentUriBuilder
 
-The `FluentUriBuilder` is designed to help build composable URI when calling APIs.
+The `FluentUriBuilder` is designed to help build composable Uri when calling APIs.
 
 Here is an example:
 
@@ -56,7 +56,7 @@ baseBuilder.WithParam("username", "John Doe"); // "api/users?username=John+Doe"
 baseBuilder.WithParam("foo", "bar"); // "api/users?foo=bar"
 ```
 
-It also implicitly cast to a `System.Uri`:
+It also implicitly casts to a `System.Uri`:
 
 ```csharp
 Uri uri = FluentUriBuilder.ForPath("api/users");
@@ -88,7 +88,7 @@ namespace HttpClientUtilities
 
 ### Request/Response Tracing
 
-When configuring the `HttpClient` via, the factory, add the tracing handler:
+When configuring the `HttpClient` via the factory, add the tracing handler:
 
 ```csharp
 
@@ -100,7 +100,7 @@ services
     .AddHttpTracing<MyNamedClient>(); // Attaches a named tracing handler.
 ```
 
-The tracing handler (`AddHttpTracing`) should probably the last handler in the
+The tracing handler (`AddHttpTracing`) should probably be the last handler in the
 chain in order to capture all modifications done by other handlers if they exist.
 
 The logger category [follows the conventions defined by the `IHttpClientFactory`](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.2#logging)
@@ -152,12 +152,12 @@ transient errors (retries, circuit breaker...).
 Unfortunately, by default it does not provide a configuration model that is
 integrated with the [ASP.NET Core Configuration model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2).
 
-This library fills that gap by providing:
+This library fills the gap by providing:
 
-- a base class for `HttpOptions` that can be used to specify common properties for Polly behaviors
+- a base class for `HttpOptions` that can be used to specify properties for Polly policies
 - helpers extension methods to configure the `HttpClient` automatically
 
-The strategy adds the following configurable behaviors:
+This strategy adds the following configurable behaviors:
 
 - Request timeouts
 - Automatic retries, with a [jittered sleep strategy](https://github.com/App-vNext/Polly/wiki/Retry-with-jitter)
