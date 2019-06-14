@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using HttpClientUtilities;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -74,13 +75,32 @@ namespace Microsoft.Extensions.DependencyInjection
             where TOptions : HttpOptions, new() =>
                 services.AddHttpClient<TClient, TImplementation>(ConfigureClientWithOptions(configureClient));
 
-        private static Action<IServiceProvider, HttpClient> ConfigureClientWithOptions<TOptions>(Action<IServiceProvider, HttpClient, TOptions> configureClient)
+        private static Action<IServiceProvider, HttpClient> ConfigureClientWithOptions<TOptions>(
+            Action<IServiceProvider, HttpClient, TOptions> configureClient)
             where TOptions : HttpOptions, new() =>
             (sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<TOptions>>().Value;
                 client.BaseAddress = options.BaseAddress;
                 client.Timeout = options.Timeout;
+                if (!string.IsNullOrWhiteSpace(options.UserAgent))
+                {
+                    client.DefaultRequestHeaders.UserAgent.TryParseAdd(options.UserAgent);
+                }
+                else
+                {
+                    var entryAssemblyName = typeof(TOptions).Assembly.GetName();
+                    var hostingEnvironment = sp.GetService<IHostingEnvironment>();
+                    if (hostingEnvironment != null)
+                    {
+                        client.DefaultRequestHeaders.UserAgent.TryParseAdd($"{hostingEnvironment.ApplicationName}/{entryAssemblyName.Version} ({hostingEnvironment.EnvironmentName})");
+                    }
+                    else
+                    {
+                        client.DefaultRequestHeaders.UserAgent.TryParseAdd($"{entryAssemblyName.Name}/{entryAssemblyName.Version}");
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(options.AuthorizationHeader))
                 {
                     client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(options.AuthorizationHeader);

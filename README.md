@@ -212,6 +212,7 @@ services
   "GitHubServiceOptions": {
     "BaseAddress": "https://api.github.com",
     "Timeout": "00:00:05",
+    "UserAgent": "MyUserAgent/1.0 (dev)",
     "AuthorizationHeader": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
     "NumberOfRetries": 2,
     "RetriesSleepDuration": "00:00:00.100",

@@ -56,6 +56,11 @@ namespace HttpClientUtilities
         public TimeSpan Timeout { get; set; } = DefaultTimeout;
 
         /// <summary>
+        /// Gets or sets the User-Agent header value.
+        /// </summary>
+        public string UserAgent { get; set; }
+
+        /// <summary>
         /// Gets or sets a static Authorization Http Header.
         /// Useful for static API Keys / bearer tokens.
         /// </summary>
