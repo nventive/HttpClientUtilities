@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,10 +30,19 @@ namespace HttpClientUtilities.Tests
                 typeof(HttpOptionsTests).Assembly.GetName().Name);
             client.DefaultRequestHeaders.UserAgent.First().Product.Version.Should().Contain(
                 typeof(HttpOptionsTests).Assembly.GetName().Version.ToString());
+            client.DefaultRequestHeaders.TryGetValues("X-CustomHeader", out var customHeaderValues).Should().BeTrue();
+            customHeaderValues.First().Should().Be("Foo");
         }
 
         private class TestOptions : HttpOptions
         {
+            public TestOptions()
+            {
+                Headers = new Dictionary<string, string>
+                {
+                    { "X-CustomHeader", "Foo" },
+                };
+            }
         }
     }
 }

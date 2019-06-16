@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using HttpClientUtilities;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -15,8 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds the <see cref="IHttpClientFactory"/> and related services to the <see cref="IServiceCollection"/>
         /// and configures a named <see cref="HttpClient"/>.
-        /// Automatically configure options defined in <typeparamref name="TOptions"/>
-        /// (<see cref="HttpOptions.BaseAddress"/>, <see cref="HttpOptions.Timeout"/> and <see cref="HttpOptions.AuthorizationHeader"/>).
+        /// Automatically configure options defined in <typeparamref name="TOptions"/>.
         /// </summary>
         /// <typeparam name="TOptions">The <see cref="HttpOptions"/> type to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -32,8 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the <see cref="IHttpClientFactory"/> and related services to the <see cref="IServiceCollection"/>
         /// and configures a binding between the <typeparamref name="TClient"/> type and a named <see cref="HttpClient"/>.
         /// The client name will be set to the type name of <typeparamref name="TClient"/>.
-        /// Automatically configure options defined in <typeparamref name="TOptions"/>
-        /// (<see cref="HttpOptions.BaseAddress"/>, <see cref="HttpOptions.Timeout"/> and <see cref="HttpOptions.AuthorizationHeader"/>).
+        /// Automatically configure options defined in <typeparamref name="TOptions"/>.
         /// </summary>
         /// <typeparam name="TClient">
         /// The type of the typed client. They type specified will be registered in the service
@@ -53,8 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the <see cref="IHttpClientFactory"/> and related services to the <see cref="IServiceCollection"/>
         /// and configures a binding between the <typeparamref name="TClient"/> type and a named <see cref="HttpClient"/>.
         /// The client name will be set to the type name of <typeparamref name="TClient"/>.
-        /// Automatically configure options defined in <typeparamref name="TOptions"/>
-        /// (<see cref="HttpOptions.BaseAddress"/>, <see cref="HttpOptions.Timeout"/> and <see cref="HttpOptions.AuthorizationHeader"/>).
+        /// Automatically configure options defined in <typeparamref name="TOptions"/>.
         /// </summary>
         /// <typeparam name="TClient">
         /// The type of the typed client. They type specified will be registered in the service
@@ -81,31 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
             (sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<TOptions>>().Value;
-                client.BaseAddress = options.BaseAddress;
-                client.Timeout = options.Timeout;
-                if (!string.IsNullOrWhiteSpace(options.UserAgent))
-                {
-                    client.DefaultRequestHeaders.UserAgent.TryParseAdd(options.UserAgent);
-                }
-                else
-                {
-                    var entryAssemblyName = typeof(TOptions).Assembly.GetName();
-                    var hostingEnvironment = sp.GetService<IHostingEnvironment>();
-                    if (hostingEnvironment != null)
-                    {
-                        client.DefaultRequestHeaders.UserAgent.TryParseAdd($"{hostingEnvironment.ApplicationName}/{entryAssemblyName.Version} ({hostingEnvironment.EnvironmentName})");
-                    }
-                    else
-                    {
-                        client.DefaultRequestHeaders.UserAgent.TryParseAdd($"{entryAssemblyName.Name}/{entryAssemblyName.Version}");
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(options.AuthorizationHeader))
-                {
-                    client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(options.AuthorizationHeader);
-                }
-
+                options.Apply(sp, client);
                 configureClient?.Invoke(sp, client, options);
             };
     }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace HttpClientUtilities
 {
@@ -45,6 +47,8 @@ namespace HttpClientUtilities
         /// </summary>
         public static readonly int DefaultMaxParallelization = 0;
 
+        private IDictionary<string, string> _headers;
+
         /// <summary>
         /// Gets or sets the <see cref="HttpClient.BaseAddress"/> value.
         /// </summary>
@@ -56,15 +60,14 @@ namespace HttpClientUtilities
         public TimeSpan Timeout { get; set; } = DefaultTimeout;
 
         /// <summary>
-        /// Gets or sets the User-Agent header value.
+        /// Gets or sets the default headers.
         /// </summary>
-        public string UserAgent { get; set; }
-
-        /// <summary>
-        /// Gets or sets a static Authorization Http Header.
-        /// Useful for static API Keys / bearer tokens.
-        /// </summary>
-        public string AuthorizationHeader { get; set; }
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Headers will never be null and allow binding from configuraiton.")]
+        public IDictionary<string, string> Headers
+        {
+            get => _headers ?? (_headers = new Dictionary<string, string>());
+            set => _headers = value;
+        }
 
         /// <summary>
         /// Gets or sets the number of automatic retries in case of transient HTTP failures.
@@ -100,5 +103,34 @@ namespace HttpClientUtilities
         /// Set to 0 for unlimited parallel requests.
         /// </summary>
         public int MaxParallelization { get; set; } = DefaultMaxParallelization;
+
+        /// <summary>
+        /// Apply options to the <paramref name="client"/>.
+        /// </summary>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
+        /// <param name="client">The <see cref="HttpClient"/> to configure.</param>
+        public virtual void Apply(IServiceProvider serviceProvider, HttpClient client)
+        {
+            client.BaseAddress = BaseAddress;
+            client.Timeout = Timeout;
+            foreach (var header in Headers)
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
+            if (client.DefaultRequestHeaders.UserAgent.Count == 0)
+            {
+                var assemblyName = GetType().Assembly.GetName();
+                var hostingEnvironment = serviceProvider.GetService<IHostingEnvironment>();
+                if (hostingEnvironment != null)
+                {
+                    client.DefaultRequestHeaders.UserAgent.TryParseAdd($"{assemblyName.Name}/{assemblyName.Version} ({hostingEnvironment.EnvironmentName})");
+                }
+                else
+                {
+                    client.DefaultRequestHeaders.UserAgent.TryParseAdd($"{assemblyName.Name}/{assemblyName.Version}");
+                }
+            }
+        }
     }
 }

@@ -163,7 +163,8 @@ This strategy adds the following configurable behaviors:
 - Automatic retries, with a [jittered sleep strategy](https://github.com/App-vNext/Polly/wiki/Retry-with-jitter)
 - Circuit breaker
 - The possibility to restrict the number of requests issued in parallel
-- The possibility to add a default `Authorization` header (useful for static API authentication mechanisms)
+- The possibility to configure default headers
+- Sensible default for User-Agent if not configured
 
 To use this feature:
 
@@ -212,8 +213,10 @@ services
   "GitHubServiceOptions": {
     "BaseAddress": "https://api.github.com",
     "Timeout": "00:00:05",
-    "UserAgent": "MyUserAgent/1.0 (dev)",
-    "AuthorizationHeader": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+    "Headers": {
+      "Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+      "User-Agent": "MyUserAgent/1.0 (dev)"
+    },
     "NumberOfRetries": 2,
     "RetriesSleepDuration": "00:00:00.100",
     "RetriesMaximumSleepDuration": "00:00:01",
@@ -235,6 +238,7 @@ The following defaults are applied when using `HttpOptions` without overriding t
 | ErrorsAllowedBeforeBreaking | 10               | Number of errors to allow before the Circuit Breaker opens. Set to 0 to disable the Circuit Breaker. |
 | BreakDuration               | 1 minute         | Duration of a break when the circuit breaker opens.                                                  |
 | MaxParallelization          | 0                | Maximum number of parallel requests allowed (in flight). Set to 0 for unlimited parallel requests.   |
+| Headers / User-Agent        | "{0}/{1} ({2})"  | 0: options Assembly name, 1: options Assembly version, 2: IHostingEnvironment.EnvironmentName        |
 
 
 
