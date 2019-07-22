@@ -24,6 +24,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpClientBuilder AddPoliciesFromOptions<T>(this IHttpClientBuilder builder)
             where T : HttpOptions, new()
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             var options = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<T>>().Value;
 
             if (options.ErrorsAllowedBeforeBreaking > 0)
@@ -65,6 +70,11 @@ namespace Microsoft.Extensions.DependencyInjection
             Func<IServiceProvider, THandler> implementationFactory = null)
             where THandler : DelegatingHandler
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (implementationFactory == null)
             {
                 builder.Services.TryAddTransient<THandler>();

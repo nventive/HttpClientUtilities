@@ -55,6 +55,11 @@ namespace HttpClientUtilities
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task RequestSuccessful(this ILogger logger, HttpRequestMessage request)
         {
+            if (request == null)
+            {
+                return;
+            }
+
             _requestSuccessful(
                 logger,
                 request.Method,
@@ -74,6 +79,11 @@ namespace HttpClientUtilities
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task RequestError(this ILogger logger, HttpRequestMessage request, Exception ex = null)
         {
+            if (request == null)
+            {
+                return;
+            }
+
             _requestError(
                 logger,
                 request.Method,
@@ -92,6 +102,11 @@ namespace HttpClientUtilities
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task ResponseSuccessful(this ILogger logger, HttpResponseMessage response)
         {
+            if (response == null)
+            {
+                return;
+            }
+
             _responseSuccessful(
                 logger,
                 $"HTTP/{response.Version}",
@@ -111,6 +126,11 @@ namespace HttpClientUtilities
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task ResponseError(this ILogger logger, HttpResponseMessage response, Exception ex = null)
         {
+            if (response == null)
+            {
+                return;
+            }
+
             _responseError(
                 logger,
                 $"HTTP/{response.Version}",

@@ -16,10 +16,17 @@ namespace HttpClientUtilities
         /// <param name="request">The <see cref="HttpRequestMessage"/>.</param>
         /// <returns>The headers as HTTP headers string.</returns>
         public static string AllHeadersAsString(this HttpRequestMessage request)
-            => string.Join(
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            return string.Join(
                 Environment.NewLine,
                 request.Headers
                     .Concat(request.Content?.Headers ?? Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>())
                     .Select(x => $"{x.Key}: {string.Join(" ", x.Value)}"));
+        }
     }
 }

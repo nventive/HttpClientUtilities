@@ -21,7 +21,7 @@ namespace HttpClientUtilities
         public HttpTracingDelegatingHandler(
             ILoggerFactory loggerFactory,
             Func<HttpResponseMessage, bool> isResponseSuccessful = null)
-            : base(loggerFactory.CreateLogger(LoggerCategory<T>()), isResponseSuccessful)
+            : base(loggerFactory?.CreateLogger(LoggerCategory<T>()) ?? throw new ArgumentNullException(nameof(loggerFactory)), isResponseSuccessful)
         {
         }
     }

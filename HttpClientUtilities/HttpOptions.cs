@@ -111,6 +111,11 @@ namespace HttpClientUtilities
         /// <param name="client">The <see cref="HttpClient"/> to configure.</param>
         public virtual void Apply(IServiceProvider serviceProvider, HttpClient client)
         {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
             client.BaseAddress = BaseAddress;
             client.Timeout = Timeout;
             foreach (var header in Headers)

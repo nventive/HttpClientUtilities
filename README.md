@@ -9,6 +9,8 @@ that uses `HttpClient`. In particular, it provides:
 - a `DelegatingHandler` that allows complete tracing of requests and responses, including the body
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Build Status](https://dev.azure.com/nventive-public/nventive/_apis/build/status/nventive.HttpClientUtilities?branchName=master)](https://dev.azure.com/nventive-public/nventive/_build/latest?definitionId=4&branchName=master)
+![Nuget](https://img.shields.io/nuget/v/HttpClientUtilities.svg)
 
 ## Getting Started
 

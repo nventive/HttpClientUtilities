@@ -123,6 +123,11 @@ namespace HttpClientUtilities.Tests
         [MemberData(nameof(ItShouldBuildAQueryStringData))]
         public void ItShouldBuildAUri(FluentUriBuilder builder, string expected)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             builder.ToString().Should().Be(expected);
             ((Uri)builder).Should().Be(new Uri(expected, UriKind.Relative));
             builder.ToUri(new Uri("https://example.org/")).Should().Be(new Uri(new Uri("https://example.org/"), expected));

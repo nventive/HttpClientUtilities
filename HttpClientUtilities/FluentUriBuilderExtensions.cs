@@ -1,4 +1,6 @@
-﻿namespace HttpClientUtilities
+﻿using System;
+
+namespace HttpClientUtilities
 {
     /// <summary>
     /// <see cref="FluentUriBuilder"/> extension methods.
@@ -14,6 +16,11 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added segment.</returns>
         public static FluentUriBuilder WithSegment(this FluentUriBuilder builder, object segment, bool encode = true)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (segment == null)
             {
                 return builder;
@@ -32,6 +39,11 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added segment.</returns>
         public static FluentUriBuilder WithSegmentIf(this FluentUriBuilder builder, string segment, bool condition, bool encode = true)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (!condition)
             {
                 return builder;
@@ -48,6 +60,16 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added path segments.</returns>
         public static FluentUriBuilder WithSegments(this FluentUriBuilder builder, params string[] segments)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (segments == null)
+            {
+                return builder;
+            }
+
             var result = builder;
             foreach (var segment in segments)
             {
@@ -67,6 +89,11 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
         public static FluentUriBuilder WithParam(this FluentUriBuilder builder, string name, object value, bool encode = true)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (value == null)
             {
                 return builder;
@@ -86,6 +113,11 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
         public static FluentUriBuilder WithParamIf(this FluentUriBuilder builder, string name, string value, bool condition, bool encode = true)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (!condition)
             {
                 return builder;
@@ -105,6 +137,11 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the added parameter.</returns>
         public static FluentUriBuilder WithParamIf(this FluentUriBuilder builder, string name, object value, bool condition, bool encode = true)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (!condition)
             {
                 return builder;
@@ -122,6 +159,11 @@
         /// <returns>A new instance of <see cref="FluentUriBuilder"/> with the fragment set.</returns>
         public static FluentUriBuilder WithFragmentIf(this FluentUriBuilder builder, string fragment, bool condition)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             if (!condition)
             {
                 return builder;
